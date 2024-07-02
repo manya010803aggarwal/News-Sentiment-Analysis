@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewsMood</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/a7e5305de0.js" crossorigin="anonymous"></script>
+
+    <!-- jQuery, Popper.js, and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7H/ubX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col">
+                <div class="card bg-dark text-white">
+                    <div class="row no-gutters">
+                        <div class="col">
+                            <!-- Add logo here if needed -->
+                        </div>
+                        <div class="col">
+                            <h1 class="text-center my-3">Welcome to NewsMood</h1>
+                        </div>
+                        {% if x %}
+                        <div class="col text-right my-3">
+                            <h3 class="mr-3">Hi, {{ y }}</h3>
+                            <form action="{% url 'shared' %}" method="get" class="d-inline">
+                                <button type="submit" class="btn btn-primary">Articles Shared With You</button>
+                            </form>
+                            <form action="{% url 'index' %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button class="btn btn-danger" type="submit" name="logout-button">Logout</button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <div class="col-2"></div>
+                        <form action="{% url 'login' %}" method="get" class="text-right">
+                            <button type="submit" class="btn btn-primary my-3">Login/Register</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form method="post" class="mt-5">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="col-md-4 mb-3">
+                    <input type="text" class="form-control" placeholder="Search Articles Keyword or Phrase"
+                        name="article-keywords-phrase">
+                </div>
+                <div class="col-md-2 mb-3">
+                    <input type="text" class="form-control" placeholder="Language (en, fr etc.)" name="language">
+                </div>
+                <div class="col-md-2 mb-3">
+                    <input type="date" class="form-control" placeholder="Search From Date" name="search-from">
+                </div>
+                <div class="col-md-2 mb-3">
+                    <input type="date" class="form-control" placeholder="Search To Date" name="search-to">
+                </div>
+                <div class="col-md-2 mb-3">
+                    <select class="form-control" name="dropdown-menu">
+                        <option value="" disabled selected hidden>Sort By</option>
+                        <option value="popularity">Popularity</option>
+                        <option value="publishedAt">Date</option>
+                        <option value="relevancy">Relevance</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary" type="submit" name="submit-button-1"><i class="fa fa-search"></i>
+                        Search</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="mt-4">
+            <h2 class="text-center">
+                {% if z %}
+                Searched News Articles
+                {% else %}
+                Trending News
+                {% endif %}
+            </h2>
+        </div>
+
+        <div class="row mt-4">
+            {% for article in data %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img class="card-img-top" src="{{ article.urlToImage }}" alt="Image" style="height: 200px;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ article.title }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Source: {{ article.source.name }}</h6>
+                        <p class="card-text">{{ article.description }}</p>
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ article.url }}" class="btn btn-primary">See Article</a>
+                            <form action="{% url 'article_info' %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success" name="article-info"
+                                    value="{{ article|safe }}">Article Information</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+
+</html>
